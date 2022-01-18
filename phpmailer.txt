@@ -1,0 +1,58 @@
+//Import PHPMailer classes into the global namespace
+//These must be at the top of your script, not inside a function
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
+require 'src/Exception.php';
+require 'src/PHPMailer.php';
+require 'src/SMTP.php';
+
+if (isset($_COOKIE['Formulario'])) {
+
+    $datos = json_decode($_COOKIE['Formulario']);
+    $nombre = $datos->nombre;
+    $email = $datos->email;
+    $tel = $datos->tel;
+    $dom = $datos->dom;
+    $ciudad = $datos->ciudad;
+    $provincia = $datos->provincia;
+    $data = $datos->datos;
+    $total = $datos->total;
+
+    //Create an instance; passing `true` enables exceptions
+    $mail = new PHPMailer(true);
+
+        //Server settings
+        $mail->SMTPDebug = 2;                      //Enable verbose debug output
+        $mail->isMail();                                            //Send using SMTP
+        $mail->Host       = 'localhost';                     //Set the SMTP server to send through
+        $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
+        $mail->Username   = 'info@tuscomprasonline.com.ar';                     //SMTP username
+        $mail->Password   = ' diBE31rilo';                               //SMTP password
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
+        $mail->Port       = 465;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+
+        //Recipients
+        $mail->setFrom('info@tuscomprasonline.com.ar');
+        $mail->addReplyTo( $email, $nombre);
+        $mail->addAddress('info@tuscomprasonline.com.ar', 'TusComprasOnline');     //Add a recipient
+
+        //Attachments
+        //Optional name
+
+        //Content
+        $mail->isHTML(true);                                  //Set email format to HTML
+        $mail->Subject = 'Solicitud de Cotización';
+        $mail->Body    = ' <h3>Nueva solicitud del cliente '.$nombre.' </h3><p>Datos del cliente:</p><ul><li>Email: '.$email.'</li><li>Tel: '.$tel.'</li><li>Domicilio: '.$dom.'</li><li>Ciudad: '.$ciudad.'. Provincia: '.$provincia.'</li></ul><p><span>Items: '.$data.'</span></p><h4>Total: $'.$total.' </h4><p>Solicitud enviada desde el sitio de TUSCOMPRASONLINE.COM.AR</p>';
+        // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+
+        if(!$mail->send()) {
+            echo 'Message could not be sent.';
+            echo 'Mailer Error: ' . $mail->ErrorInfo;
+        } else {
+            echo 'Message has been sent';
+        }
+
+    echo '<script> document.cookie = "Formulario=; expires=Thu, 01 Jan 1970 00:00:00 UTC;"; </script>';
+}

@@ -1,0 +1,83 @@
+use \Mailjet\Resources;
+
+if(isset($_COOKIE['Formulario'])){
+  
+    $datos = json_decode($_COOKIE['Formulario']);
+    $nombre = $datos->nombre;
+    $email2 = $datos->email;
+    $tel = $datos->tel;
+    $dom = $datos->dom;
+    $ciudad = $datos->ciudad;
+    $provincia = $datos->provincia;
+    $data = $datos->datos;
+    $total = $datos->total;
+
+ $mj = new \Mailjet\Client('9bd175aba2ace49ece58030b6ada6053','1292e1ece0cc2c36b9a99fc0494875aa',true,['version' => 'v3.1']);
+  $body = [
+    'Messages' => [
+      [
+        'From' => [
+          'Email' => $email2,
+          'Name' => $nombre
+        ],
+        'To' => [
+          [
+            'Email' => "info@tuscomprasonline.com.ar",
+            'Name' => "tutiendaonline"
+          ]
+        ],
+        'Subject' => "Nueva Solicitud de ".$nombre."",
+        'TextPart' => "Cotización",
+        'HTMLPart' => "<h4>Datos del cliente:</h4>
+        <ul><li>Email: <b>".$email2."</b> </li><li>Teléfono: <b>".$tel."</b> </li><li>Domicilio: <b>".$dom."</b> </li><li>Ciudad: <b>".$ciudad."</b>. Provincia: <b>".$provincia."</b> </li></ul> <br />
+        <p> <span style='color: #000'>Items</span>: ".$data." </p>
+        <h4> Total: $".$total." </h4>
+        <br />Solicitud desde el sitio web de TUSCOMPRASONLINE.COM.AR",
+          'Headers' => [
+      'Reply-To' => ""
+    ]     
+      ]
+    ]
+  ];
+  $response = $mj->post(Resources::$Email, ['body' => $body]);
+  $response->success();
+
+  echo '<script> document.cookie = "Formulario=; expires=Thu, 01 Jan 1970 00:00:00 UTC;"; </script>';
+}
+
+if(isset($_COOKIE['Contacto'])){
+  
+    $datos = json_decode($_COOKIE['Contacto']);
+    $nombre = $datos->nombre;
+    $email2 = $datos->email;
+    $asunto = $datos->asunto;
+    $mensaje = $datos->mensaje;
+
+ $mj = new \Mailjet\Client('f91107d05c4bd64235e8c18f4eb99a8f','2b73e2ce861e4590b209c940072b38c9',true,['version' => 'v3.1']);
+  $body = [
+    'Messages' => [
+      [
+        'From' => [
+          'Email' => 'gonzaa.vidal.18@gmail.com',
+          'Name' => $nombre
+        ],
+        'To' => [
+          [
+            'Email' => "info@tuscomprasonline.com.ar",
+            'Name' => "tutiendaonline"
+          ]
+        ],
+        'Subject' => "".$asunto."",
+        'TextPart' => "Contacto",
+        'HTMLPart' => "<h4>Datos del cliente:</h4>
+        <ul><li>Nombre: <b>".$nombre."</b> </li><li>Email: <b>".$email2."</b> </li></ul> <br />
+        <p> <span style='color: #000'>Mensaje</span>: <br /> ".$mensaje." </p>
+        <br />Contacto desde el sitio web de TUSCOMPRASONLINE.COM.AR",
+      ]
+    ]
+  ];
+  $response = $mj->post(Resources::$Email, ['body' => $body]);
+  $response->success();
+
+  echo '<script> document.cookie = "Contacto=; expires=Thu, 01 Jan 1970 00:00:00 UTC;"; </script>';
+}
